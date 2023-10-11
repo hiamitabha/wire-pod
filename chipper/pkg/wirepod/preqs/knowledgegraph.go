@@ -69,19 +69,75 @@ func houndifyKG(req sr.SpeechRequest) string {
 	return apiResponse
 }
 
+func constructSubstring(input string, maxLength int) string {
+    // Split the input string into sentences using periods as the delimiter.
+    sentences := strings.Split(input, ".")
+
+    // Initialize an empty substring and a length counter.
+    substring := ""
+    currentLength := 0
+
+    // Iterate through the sentences and add them to the substring.
+    for _, sentence := range sentences {
+        // Trim leading and trailing spaces from the sentence.
+        sentence = strings.TrimSpace(sentence)
+
+        // Skip empty sentences.
+        if sentence == "" {
+            continue
+        }
+
+        // Calculate the length of the current sentence.
+        sentenceLength := len(sentence)
+
+        // Check if adding the current sentence to the substring exceeds the maxLength.
+        if currentLength+sentenceLength+len(substring) <= maxLength {
+            // Add the sentence to the substring.
+            if substring != "" {
+                substring += ". "
+            }
+            substring += sentence
+            currentLength += sentenceLength
+        } else {
+            // Stop adding sentences if maxLength is reached.
+            break
+        }
+    }
+    return substring
+}
+
+
 func togetherRequest(transcribedText string) string {
-	sendString := "You are a helpful robot called Vector . You will be given a question asked by a user and you must provide the best answer you can. It may not be punctuated or spelled correctly. Keep the answer concise yet informative. Here is the question: " + "\\" + "\"" + transcribedText + "\\" + "\"" + " , Answer: "
+    // Look at the transcribedText and generate an appropriate prompt
+    var prompt string
+    if strings.Contains(transcribedText, "story") {
+         var storyType string
+         if strings.Contains(transcribedText, "fairy") {
+             storyType = "a fairy tale"
+         } else if strings.Contains(transcribedText, "magic") {
+             storyType = "a magical kingdom"
+         } else if strings.Contains(transcribedText, "stars") {
+             storyType = "stars at night"
+         } else {
+             storyType = "small children"
+         }
+         prompt = "You are a friendly robot and your job is to help children. The child wants to go to sleep. Could you narrate a story to the child so that she goes to sleep peacefully? The story must be about " + storyType + ". The story must have at most 1000 letters."
+    } else {    
+	    prompt = "You are a helpful robot called Vector . You will be given a question asked by a user and you must provide the best answer you can. It may not be punctuated or spelled correctly. Keep the answer concise yet informative. Here is the question: " + "\\" + "\"" + transcribedText + "\\" + "\"" + " , Answer: "
+    }
 	url := "https://api.together.xyz/inference"
     model := vars.APIConfig.Knowledge.Model
 	formData := `{
 "model": "` + model + `",
-"prompt": "` + sendString + `",
+"prompt": "` + prompt + `",
 "temperature": 0.7,
-"max_tokens": 256,
+"max_tokens": 200,
 "top_p": 1
 }`
 	logger.Println("Making request to Together API...")
     logger.Println("Model is " + model)
+    logger.Println("Prompt is " + prompt)
+    
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer([]byte(formData)))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+vars.APIConfig.Knowledge.Key)
@@ -103,8 +159,9 @@ func togetherRequest(transcribedText string) string {
         x := val.(map[string]any)
         textResponse := x["text"].(string)
         apiResponse := strings.TrimSuffix(textResponse, "</s>")
-	    logger.Println("Together response: " + apiResponse)
-        return apiResponse
+        response := constructSubstring(apiResponse, 1000)  
+	    logger.Println("Together response: " + response)
+        return response
     }
     // In case text is not present in result from API, return a string saying answer was not found
     return "Answer was not found"
