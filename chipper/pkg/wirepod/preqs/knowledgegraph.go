@@ -76,7 +76,7 @@ func togetherRequest(transcribedText string) string {
 "model": "` + model + `",
 "prompt": "` + sendString + `",
 "temperature": 0.7,
-"max_tokens": 256,
+"max_tokens": 8192,
 "top_p": 1
 }`
 	logger.Println("Making request to Together API...")
@@ -126,7 +126,7 @@ func openaiRequest(transcribedText string) string {
 	logger.Println("Making request to OpenAI...")
 	url := "https://api.openai.com/v1/completions"
 	formData := `{
-"model": "gpt-3.5-turbo-instruct",
+"model": "gpt-4o",
 "prompt": "` + sendString + `",
 "temperature": 0.9,
 "max_tokens": 256,
