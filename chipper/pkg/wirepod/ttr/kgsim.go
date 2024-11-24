@@ -115,7 +115,7 @@ func removeEmojis(input string) string {
 }
 
 func CreateAIReq(transcribedText, esn string, gpt3tryagain, isKG bool) openai.ChatCompletionRequest {
-	defaultPrompt := "You are a helpful, animated robot called Vector. Keep the response concise yet informative."
+    defaultPrompt := "You are a helpful, animated robot called Vector. Keep the response concise yet informative."
 
 	var nChat []openai.ChatCompletionMessage
 
@@ -142,7 +142,10 @@ func CreateAIReq(transcribedText, esn string, gpt3tryagain, isKG bool) openai.Ch
 
 	smsg.Content = CreatePrompt(smsg.Content, model, isKG)
 
-	nChat = append(nChat, smsg)
+    if model != "o1-mini" && model != "o1-preview" {
+        // o1-preview and o1-mini models don't support system roles
+	    nChat = append(nChat, smsg)
+    }
 	if vars.APIConfig.Knowledge.SaveChat {
 		rchat := GetChat(esn)
 		logger.Println("Using remembered chats, length of " + fmt.Sprint(len(rchat.Chats)) + " messages")
@@ -155,7 +158,7 @@ func CreateAIReq(transcribedText, esn string, gpt3tryagain, isKG bool) openai.Ch
 
 	aireq := openai.ChatCompletionRequest{
 		Model:            model,
-		MaxTokens:        2048,
+		//MaxTokens:        2048,
 		Temperature:      1,
 		TopP:             1,
 		FrequencyPenalty: 0,
