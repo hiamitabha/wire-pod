@@ -160,9 +160,12 @@ func CreateAIReq(transcribedText, esn string, gpt3tryagain, isKG bool) openai.Ch
 		model = vars.APIConfig.Knowledge.Model
 	}
 
+    // Disabling the addition of the system prompt, because models like DeepSeek-v1 are poor with the system prompt
+    /*
 	smsg.Content = CreatePrompt(smsg.Content, model, isKG)
-
 	nChat = append(nChat, smsg)
+    */
+
 	if vars.APIConfig.Knowledge.SaveChat {
 		rchat := GetChat(esn)
 		logger.Println("Using remembered chats, length of " + fmt.Sprint(len(rchat.Chats)) + " messages")
@@ -176,7 +179,7 @@ func CreateAIReq(transcribedText, esn string, gpt3tryagain, isKG bool) openai.Ch
 	aireq := openai.ChatCompletionRequest{
 		Model:            model,
 		MaxTokens:        2048,
-		Temperature:      1,
+		Temperature:      0.6,
 		TopP:             1,
 		FrequencyPenalty: 0,
 		PresencePenalty:  0,
