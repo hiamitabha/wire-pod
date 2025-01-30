@@ -135,7 +135,7 @@ func removeEmojis(input string) string {
 }
 
 func CreateAIReq(transcribedText, esn string, gpt3tryagain, isKG bool) openai.ChatCompletionRequest {
-	defaultPrompt := "You are a helpful, animated robot called Vector. Keep the response concise yet informative."
+	defaultPrompt := "You are a helpful, animated robot called Vector. Please animate while you think, reason,a nd answer the question. Keep the response concise yet informative and having all the details so that the user is knowledgable about the answer."
 
 	var nChat []openai.ChatCompletionMessage
 
@@ -161,10 +161,8 @@ func CreateAIReq(transcribedText, esn string, gpt3tryagain, isKG bool) openai.Ch
 	}
 
     // Disabling the addition of the system prompt, because models like DeepSeek-v1 are poor with the system prompt
-    /*
 	smsg.Content = CreatePrompt(smsg.Content, model, isKG)
 	nChat = append(nChat, smsg)
-    */
 
 	if vars.APIConfig.Knowledge.SaveChat {
 		rchat := GetChat(esn)
