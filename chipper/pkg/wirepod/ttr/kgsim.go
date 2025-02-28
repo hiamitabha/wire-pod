@@ -150,6 +150,7 @@ func CreateAIReq(transcribedText, esn string, gpt3tryagain, isKG bool) openai.Ch
 
 	var model string
 
+    /*
 	if gpt3tryagain {
 		model = openai.GPT3Dot5Turbo
 	} else if vars.APIConfig.Knowledge.Provider == "openai" {
@@ -159,6 +160,8 @@ func CreateAIReq(transcribedText, esn string, gpt3tryagain, isKG bool) openai.Ch
 		logger.Println("Using " + vars.APIConfig.Knowledge.Model)
 		model = vars.APIConfig.Knowledge.Model
 	}
+    */
+    model = "gpt-4.5-preview"
 
 	smsg.Content = CreatePrompt(smsg.Content, model, isKG)
 
