@@ -153,7 +153,7 @@ func CreateAIReq(transcribedText, esn string, gpt3tryagain, isKG bool) openai.Ch
 	if gpt3tryagain {
 		model = openai.GPT3Dot5Turbo
 	} else if vars.APIConfig.Knowledge.Provider == "openai" {
-		model = openai.GPT4oMini
+		model = "o4-mini"
 		logger.Println("Using " + model)
 	} else {
 		logger.Println("Using " + vars.APIConfig.Knowledge.Model)
@@ -175,7 +175,6 @@ func CreateAIReq(transcribedText, esn string, gpt3tryagain, isKG bool) openai.Ch
 
 	aireq := openai.ChatCompletionRequest{
 		Model:            model,
-		MaxTokens:        2048,
 		Temperature:      1,
 		TopP:             1,
 		FrequencyPenalty: 0,
