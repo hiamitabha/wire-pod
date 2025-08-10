@@ -11,12 +11,12 @@ require (
 	github.com/digital-dream-labs/opus-go v0.0.0-20201230195736-934a8a9e0a1e
 	github.com/digital-dream-labs/vector-bluetooth v0.0.0-20210604051118-1c511122d877
 	github.com/fforchino/vector-go-sdk v0.0.0-20231108155304-62168f3595d6
-	github.com/ggerganov/whisper.cpp/bindings/go v0.0.0-20240917125632-5b1ce40fa882
 	github.com/go-audio/audio v1.0.0
 	github.com/go-audio/wav v1.1.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.5.0
 	github.com/kercre123/vosk-api/go v1.0.2
+	github.com/kercre123/whisper.cpp/bindings/go v0.0.0-20250602164512-60cd96acff3a
 	github.com/kercre123/zeroconf v1.0.1
 	github.com/maxhawkins/go-webrtcvad v0.0.0-20210121163624-be60036f3083
 	github.com/ncruces/zenity v0.10.10
@@ -41,7 +41,6 @@ require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
 	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
 	github.com/alessio/shellescape v1.4.1 // indirect
-	github.com/alphacep/vosk-api/go v0.3.50 // indirect
 	github.com/aws/aws-sdk-go v1.34.28 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cbroglie/mustache v1.0.1 // indirect
@@ -63,7 +62,6 @@ require (
 	github.com/jamesruan/sodium v0.0.0-20181216154042-9620b83ffeae // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josephspurrier/goversioninfo v1.4.0 // indirect
-	github.com/kercre123/vosk-api v1.0.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lib/pq v1.7.0 // indirect
 	github.com/magiconair/properties v1.8.1 // indirect
