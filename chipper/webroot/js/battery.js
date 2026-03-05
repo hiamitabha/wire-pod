@@ -1,5 +1,20 @@
 var botStats = document.getElementById("botStats");
 
+const holidayLightGifs = [
+  "faceholidaylights.gif",
+  "faceholidaylights1.gif",
+  "faceholidaylights2.gif",
+  "faceholidaylights3.gif"
+];
+
+const holidayGif = holidayLightGifs[Math.floor(Math.random() * holidayLightGifs.length)];
+
+const hnyGifs = [
+  "facefireworks.gif" // Setting up this logic in case it's worth adding the confetti in later on
+];
+
+const hnyGif = hnyGifs[Math.floor(Math.random() * hnyGifs.length)];
+
 function getBatteryPercentage(voltage) {
   let percentage;
   const maxVoltage = 4.1; // Maximum voltage for the battery
@@ -75,7 +90,7 @@ async function updateBatteryInfo(serial, i) {
     }
   } else if (batteryStatus["battery_level"] === 1 && !batteryStatus["is_on_charger_platform"]) {
     // Cap the battery level at 15% if the battery level is 1 and not charging
-    vectorFace.style.backgroundImage = "url(/assets/homeface.png)";
+    vectorFace.style.backgroundImage = "url(/assets/homeface.gif)";
     batteryPercentage = Math.min(15, batteryPercentage);
     batteryStatus["battery_level"] = 0; // Set color to red
   }
@@ -111,7 +126,21 @@ async function updateBatteryInfo(serial, i) {
       chargeTimeRemaining.innerHTML = "Full";
       // assume 100% if Full
       batteryLevel.style.width = "100%";
-      vectorFace.style.backgroundImage = "url(/assets/face.gif)";
+      const month = new Date().getMonth();
+      const day = new Date().getUTCDate();
+      if (month == 0 || month == 11) {
+        if (month == 11 && day == 31) {
+          vectorFace.style.backgroundImage = `url(/assets/${hnyGif})`;
+        } else if (month == 0 && day == 1) {
+          vectorFace.style.backgroundImage = `url(/assets/${hnyGif})`;
+        } else if (month == 11 && (day == 24 || day == 25))  {
+          vectorFace.style.backgroundImage = `url(/assets/${holidayGif})`;
+        } else {
+          vectorFace.style.backgroundImage = "url(/assets/facesnowglobe.gif)";
+        }
+      } else {
+        vectorFace.style.backgroundImage = "url(/assets/face.gif)";
+      }
     }
   } else {
     var charging = batteryOutline.getElementsByClassName("charging")[0];
