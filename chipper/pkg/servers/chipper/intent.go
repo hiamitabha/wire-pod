@@ -5,6 +5,7 @@ import (
 
 	pb "github.com/digital-dream-labs/api/go/chipperpb"
 	"github.com/kercre123/wire-pod/chipper/pkg/logger"
+	wirepod_ttr "github.com/kercre123/wire-pod/chipper/pkg/wirepod/ttr"
 	"github.com/kercre123/wire-pod/chipper/pkg/vtt"
 )
 
@@ -19,6 +20,10 @@ func (s *Server) StreamingIntent(stream pb.ChipperGrpc_StreamingIntentServer) er
 
 		return err
 	}
+
+	// Kick off camera capture concurrently while STT processes the audio.
+	// The frame will be available in the ttr package when StreamingKGSim runs.
+	go wirepod_ttr.CaptureVisualContextAsync(req.DeviceId)
 
 	if _, err = s.intent.ProcessIntent(
 		&vtt.IntentRequest{

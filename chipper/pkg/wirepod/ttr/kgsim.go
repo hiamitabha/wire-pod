@@ -134,7 +134,7 @@ func removeEmojis(input string) string {
 	return result
 }
 
-func CreateAIReq(transcribedText, esn string, gpt3tryagain, isKG bool) openai.ChatCompletionRequest {
+func CreateAIReq(transcribedText, esn string, gpt3tryagain, isKG bool, imageBase64 string) openai.ChatCompletionRequest {
 	defaultPrompt := "You are a helpful, animated robot called Vector. Keep the response concise yet informative."
 
 	var nChat []openai.ChatCompletionMessage
@@ -162,16 +162,39 @@ func CreateAIReq(transcribedText, esn string, gpt3tryagain, isKG bool) openai.Ch
 
 	smsg.Content = CreatePrompt(smsg.Content, model, isKG)
 
+	if imageBase64 != "" {
+		smsg.Content = smsg.Content + "\n\nYou have been provided a camera frame captured from your front camera while the user was speaking. Use this visual context to give more grounded, relevant answers."
+	}
+
 	nChat = append(nChat, smsg)
 	if vars.APIConfig.Knowledge.SaveChat {
 		rchat := GetChat(esn)
 		logger.Println("Using remembered chats, length of " + fmt.Sprint(len(rchat.Chats)) + " messages")
 		nChat = append(nChat, rchat.Chats...)
 	}
-	nChat = append(nChat, openai.ChatCompletionMessage{
-		Role:    openai.ChatMessageRoleUser,
-		Content: transcribedText,
-	})
+	if imageBase64 != "" {
+		nChat = append(nChat, openai.ChatCompletionMessage{
+			Role: openai.ChatMessageRoleUser,
+			MultiContent: []openai.ChatMessagePart{
+				{
+					Type: openai.ChatMessagePartTypeText,
+					Text: transcribedText,
+				},
+				{
+					Type: openai.ChatMessagePartTypeImageURL,
+					ImageURL: &openai.ChatMessageImageURL{
+						URL:    fmt.Sprintf("data:image/jpeg;base64,%s", imageBase64),
+						Detail: openai.ImageURLDetailLow,
+					},
+				},
+			},
+		})
+	} else {
+		nChat = append(nChat, openai.ChatCompletionMessage{
+			Role:    openai.ChatMessageRoleUser,
+			Content: transcribedText,
+		})
+	}
 
 	aireq := openai.ChatCompletionRequest{
 		Model:            model,
@@ -257,7 +280,11 @@ func StreamingKGSim(req interface{}, esn string, transcribedText string, isKG bo
 	speakReady := make(chan string)
 	successIntent := make(chan bool)
 
-	aireq := CreateAIReq(transcribedText, esn, false, isKG)
+	imageBase64, hasVisualCtx := GetVisualContext(esn)
+	if hasVisualCtx {
+		logger.Println("VisualCtx: attaching camera frame to LLM request for " + esn)
+	}
+	aireq := CreateAIReq(transcribedText, esn, false, isKG, imageBase64)
 
 	stream, err := c.CreateChatCompletionStream(ctx, aireq)
 	if err != nil {
@@ -265,7 +292,7 @@ func StreamingKGSim(req interface{}, esn string, transcribedText string, isKG bo
 		if strings.Contains(err.Error(), "does not exist") && vars.APIConfig.Knowledge.Provider == "openai" {
 			logger.Println("GPT-4 model cannot be accessed with this API key. You likely need to add more than $5 dollars of funds to your OpenAI account.")
 			logger.LogUI("GPT-4 model cannot be accessed with this API key. You likely need to add more than $5 dollars of funds to your OpenAI account.")
-			aireq := CreateAIReq(transcribedText, esn, true, isKG)
+			aireq := CreateAIReq(transcribedText, esn, true, isKG, imageBase64)
 			logger.Println("Falling back to " + aireq.Model)
 			logger.LogUI("Falling back to " + aireq.Model)
 			stream, err = c.CreateChatCompletionStream(ctx, aireq)

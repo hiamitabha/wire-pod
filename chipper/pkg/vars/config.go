@@ -33,6 +33,7 @@ type apiConfig struct {
 		OpenAIVoiceWithEnglish bool    `json:"openai_voice_with_english"`
 		SaveChat               bool    `json:"save_chat"`
 		CommandsEnable         bool    `json:"commands_enable"`
+		VisualContext          bool    `json:"visual_context"`
 		Endpoint               string  `json:"endpoint"`
 		TopP                   float32 `json:"top_p"`
 		Temperature            float32 `json:"temp"`
