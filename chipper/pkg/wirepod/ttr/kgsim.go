@@ -164,6 +164,7 @@ func CreateAIReq(transcribedText, esn string, gpt3tryagain, isKG bool, imageBase
 
 	if imageBase64 != "" {
 		smsg.Content = smsg.Content + "\n\nYou have been provided a camera frame captured from your front camera while the user was speaking. Use this visual context to give more grounded, relevant answers."
+        logger.Println("I see an image. I will send it for processing")
 	}
 
 	nChat = append(nChat, smsg)
@@ -283,7 +284,9 @@ func StreamingKGSim(req interface{}, esn string, transcribedText string, isKG bo
 	imageBase64, hasVisualCtx := GetVisualContext(esn)
 	if hasVisualCtx {
 		logger.Println("VisualCtx: attaching camera frame to LLM request for " + esn)
-	}
+	} else {
+		logger.Println("VisualCtx: No image taken")
+    }
 	aireq := CreateAIReq(transcribedText, esn, false, isKG, imageBase64)
 
 	stream, err := c.CreateChatCompletionStream(ctx, aireq)

@@ -5,6 +5,7 @@ import (
 
 	pb "github.com/digital-dream-labs/api/go/chipperpb"
 	"github.com/kercre123/wire-pod/chipper/pkg/logger"
+	wirepod_ttr "github.com/kercre123/wire-pod/chipper/pkg/wirepod/ttr"
 	"github.com/kercre123/wire-pod/chipper/pkg/vtt"
 )
 
@@ -18,6 +19,8 @@ func (s *Server) StreamingKnowledgeGraph(stream pb.ChipperGrpc_StreamingKnowledg
 
 		return err
 	}
+
+	go wirepod_ttr.CaptureVisualContextAsync(req.DeviceId)
 
 	if _, err = s.kg.ProcessKnowledgeGraph(
 		&vtt.KnowledgeGraphRequest{
