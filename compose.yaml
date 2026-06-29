@@ -2,6 +2,9 @@ services:
   wire-pod:
     container_name: wire-pod
     hostname: escapepod
+    build:
+      context: .
+      dockerfile: dockerfile
     image: ghcr.io/kercre123/wire-pod:main
     restart: unless-stopped
     environment:
@@ -23,4 +26,6 @@ services:
 
 volumes:
   wire-pod-data:
+    driver: local
+  wire-pod-images:
     driver: local

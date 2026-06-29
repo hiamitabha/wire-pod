@@ -148,6 +148,7 @@ RUN apt-get update \
         git \ 
         iproute2 \ 
         libasound2 \ 
+        libatomic1 \ 
         libopus0 \ 
         libopusfile0 \ 
         libsodium23 \ 
@@ -164,8 +165,7 @@ COPY --from=builder /src /opt/wire-pod
 COPY --from=builder /build/chipper /opt/wire-pod/chipper/chipper
 COPY --from=builder /build/.wirepod-version /opt/wire-pod/.wirepod-version
 
-RUN rm -rf .git && \
-    chmod +x \
+RUN chmod +x \
         /opt/wire-pod/setup.sh \
         /opt/wire-pod/update.sh \
         /opt/wire-pod/chipper/start.sh \
